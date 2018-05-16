@@ -11,6 +11,56 @@ Here, $f_n$'s are basis functions, the coefficients $c_n$'s are the optimization
 \end{equation}
 The cost of calculating the partial derivative of eq. \eqref{eq:GROUPgradient} is dominated by the time evolution of the states $\psi$ and $\chi$ from eq. \eqref{eq:CostDeriv}. Hence, the computation time of the parametrized gradient is comparable to that of GRAPE.
 
+
+MOTIVATE IPOPT (solve constrained, non-linear, multi-variable problems)
+
+GENERAL (perhaps write using specific symbols for control problem)
+
+Interior point methods solve barrier problems of the form
+ \begin{align*}
+	\min_{x , s} \; & \; f(x) - \mu \sum_{i=1}^{m} \log s_i \\
+	\text{s.t.}  \; & \; c_E (x) = 0  \\ 
+					& \; c_I (x) - s =0 \; ,
+\end{align*}
+where $c_E$ and $c_I$ are equality and inequality constraints of the problem, and the slack variables, $s$, transform the inequality constraints into equality constraints. The barrier term enforces the slack variables to remain positive, as the function diverges if any $s_i \to \infty$
+The optimization Lagrangian of the problem reads
+\begin{equation}
+	\mathcal{L} = f(x) - \lambda ^T c_E (x) - \nu ^T (c_I (x) -s)
+\end{equation}
+where $\lambda$ and $\nu$ are the Lagrange multipliers of the equality and inequality constraints respectively. 
+The Karush-Kuhn-Tucker conditions for the problem can be expressed in a single mapping
+\begin{equation}
+	F \equiv 
+	\begin{bmatrix}
+  \nabla_x f(x) - A_{E}^{T}(x) \lambda  - A_{I}^{T}(x) \nu \\
+  S \nu - \mu e \\
+  c_{E} (x)		\\
+  c_{I} (x) - s 
+  \end{bmatrix}
+  = 0 \; ,
+\end{equation}
+where $A_E (x)$ and $A_I (x)$ are the constraint Jacobians. $S$ and $Z$ are defined as diagonal matrices with entries given by the vectors $s$ and $\nu$, while we let $e = (1 ,1 , \ldots , 1 )^T$.
+Applying Newtons method to the non-linear problem given above yields
+\begin{equation}
+  \begin{bmatrix}
+  \nabla_{xx} \mathcal{L} 	& 0 	& -A_{E}^{T}(x)	& -A_{I}^{T}(x)	\\
+  0 						& Z 	& 0 			& S 			\\
+  A_{E}(x) 					& 0 	& 0 			& 0				\\
+  A_{I}(x) 					& -I	& 0				& 0				 
+  \end{bmatrix}  
+  \begin{bmatrix}
+  p_x \\ p_s \\ p_{\lambda} \\ p_{\nu} 
+  \end{bmatrix}
+  = - F
+\end{equation}
+where $\left[ p_x , p_s , p_{\lambda} , p_{\nu} \right]$ is the Newton step direction.
+
+This is a primal-dual system ...
+For a sufficient small, positive barrier parameter $\mu$ the problem gas a locally unique solution denoted by the point $( x(\mu) , s (\mu) , \lambda (\mu) , \nu (\mu) )$. The main problem is solved by solving a series of subproblems for various values of $\mu$. The trajectory described by the local solution points is called the primal-dual central path, and it converges to $( x* , s* , \lambda* , \nu * )$ as $\mu \to 0$. (taken from book)
+
+From GROUP the constraint Jacobian is given by ...
+The Hessian $\nabla_{xx} \mathcal{L}$ is in practice too demanding to compute for control problems, however, it can be efficiently approximated using the L-BFGS method, which utilizes previous derivatives. Hence, it is important that the derivatives are very accurate, as a poor Hessian can reduce the speed of the optimization significantly. 
+
 Optimal control problem often involve constraints ensuring the control parameters stay within a feasible limit
 \begin{equation}
 	 u_{min} (t_j) \leq u(t_j) \leq u_{max} (t_j) \; .
