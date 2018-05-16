@@ -1,4 +1,11 @@
 \section{Tensor-Network Descriptions}
 
-MPS
-tDMRG
+For complex many-body systems the Hilbert space grows too large for standard descriptions of states. Due to the combinatorial nature of the Bose-Hubbard model its corresponding Hilbert space scales exponentially with the system size. Matrix Products States parametrize states as networks of tensors.
+
+Mention relation to lattices ...
+
+A general state can be decomposed into a tensor network through a series of Schmidt decompositions, where eigenstates barely contributing to the overall state can be omitted resulting in a truncation of the dimensions of the tensor. The truncation along with an area law scaling of entropy with the system results in matrix product states only requiring to consider a small corner of the full Hilbert space.
+
+Several methods exists for time-evolving tensor networks, however, most of them are variants of the same core ideas originally derived from the DMRG algorithm. The tDMRG algorithm employs a Trotter expansion of the propagator in order to evolve the state by applying a series of site-specific gate operations to the state.
+
+Describe tailored tDMRG algorithm ...
