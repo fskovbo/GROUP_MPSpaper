@@ -1,0 +1,22 @@
+\section{The Control Problem}
+
+In quantum optimal control a given state transfer or unitary is achieved by dynamically manipulating a system through a time-dependent Hamiltonian
+\begin{equation}
+	\hat{H} =  \hat{H}_0 + \sum_{n = 1}^{m}  \hat{H}_n (u_n(t)) \; ,
+	\label{eq:ControlHamiltonians}
+\end{equation} 
+where $\hat{H}_0$ is an uncontrollable drift, while $\hat{H}_n$ can be adjusted through the control functions $u_n(t)$. Here, the system under investigation is a Bose-Einstein condensate placed in a one-dimensional optical lattice. The system is well described by the Bose-Hubbard model
+\begin{equation}
+	\hat{H} = - J \sum_{\langle i,j \rangle} \hat{a}_{i}^{\dag} \hat{a}_{j} + \frac{U}{2} \sum_{i} \hat{n}_i \left( \hat{n}_i -1 \right) \; ,
+\end{equation}
+where $J$ and $U$ are the tunneling and interaction matrix elements respectively, which depend on the depth of the lattice wells. The matrix elements are in units of recoil energy $E_{\mathrm{rec}} = \frac{\hbar ^2 k^2}{2 m}$, where $m$ is the mass of the atoms of the BEC, and $k$ is the photon wave number of the light forming the optical lattice.
+Experimentally the Bose-Hubbard model is often realized using ultracold gases of Rb-87 and lattice wavelengths of $\lambda = 1064 \: \mathrm{nm}$. Thus, the recoil energy is on the order of ... (units of ??)
+
+In this work we examine the superfluid to Mott-insulator phase transition of the Bose-hubbard model, which can be crossed solely by varying the fraction $U/J$. The Bose-Hubbard system is controlled experimentally by adjusting the intensity of the lasers constituting the optical lattice, which in turn varies the depth of the lattice. Alternatively, the interaction $U$ can be expressed in units of the tunneling $J$, whereby the interaction term of the Bose-Hubbard model constitutes the control Hamiltonian, while the tunneling can be modeled as the drift.
+
+The desired dynamics can be achieved by formulating a state transfer problem, $\ket{\psi_0} \to \ket{\psi_{\mathrm{target}}}$, where the initial state $\ket{\psi_0}$ is a ground state in the superfluid phase, while the desired target-state $\ket{\psi_{\mathrm{target}}}$ is a ground state in the MI phase. Thus, the problem can be expressed as the minimization of the cost function
+\begin{equation}
+	J = \frac{1}{2} \left( 1-|\braket{\psi_{\mathrm{target}} | \psi (T)}|^2 \right) \; ,
+	\label{eq:infidelityCost}
+\end{equation}
+where $T$ is the duration of the control sequence. Since the control functions determine the time evolution, one must find the set of controls bringing the final state as close as possible to the target state. In practice, very few optimal control problems can be solved analytically, however, expressing the problem as a minimization enables the use of well established frameworks derived in mathematical optimization theory.

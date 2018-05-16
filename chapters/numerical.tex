@@ -1,0 +1,23 @@
+\section{Numerical Optimization}
+
+In GRAPE the dimension of the optimization space is $N = \lfloor T / \Delta t \rfloor$ due to the discretization. However, most optimal solutions require much fewer degrees of freedom than introduced in the discretization. Therefore, expanding the control in a proper basis can significantly reduce the dimension of the optimization space.
+The GROUP algorithm utilizes the gradient-based optimization from GRAPE while employing a chopped basis parametrization 
+\begin{equation}
+	u(t) = u_0 (t) + S(t) \sum_{n=1}^{M} c_n f_n (t) \; . \label{eq:controlParametrization}
+\end{equation}
+Here, $f_n$'s are basis functions, the coefficients $c_n$'s are the optimization parameters, $u_0 (t)$ is the initial seed, and $S(t)$ is a shape function enforcing the boundary conditions of the original control. The derivative of the cost function in the parameterization can be derived using the chain rule
+\begin{equation}
+	\frac{\partial J }{\partial c_n} = \sum_{j = 1}^{N} \frac{\partial J }{\partial u(t_j)} S(t_j) f_n(t_j) \; . \label{eq:GROUPgradient} 
+\end{equation}
+The cost of calculating the partial derivative of eq. \eqref{eq:GROUPgradient} is dominated by the time evolution of the states $\psi$ and $\chi$ from eq. \eqref{eq:CostDeriv}. Hence, the computation time of the parametrized gradient is comparable to that of GRAPE.
+
+Optimal control problem often involve constraints ensuring the control parameters stay within a feasible limit
+\begin{equation}
+	 u_{min} (t_j) \leq u(t_j) \leq u_{max} (t_j) \; .
+	 \label{eq:ControlConstraints}
+\end{equation}
+The parameterizing of eq. \eqref{eq:controlParametrization} does not alter the constraints, although additional constraints of the $c_n$ coefficients can be introduced. However, optimizing a constrained problem through its gradient requires the derivatives of the constraints expressed through a Jacobian, which will be affected by the parameterization. The matrix elements of the Jacobian of eq. \eqref{eq:ControlConstraints} parametrized by \eqref{eq:controlParametrization} are
+\begin{equation}
+	\boldsymbol{J}_{ij} = \frac{\partial u(t_i)}{\partial c_j} = S(t_i) f_j (t_i) \; . \label{eq:ConstraintJacobian}
+\end{equation}
+The Jacobian of the constraints has $N \times M$ entries, which remain constant throughout the optimization, whereby they can easily be retrieved.

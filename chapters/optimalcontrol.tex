@@ -1,0 +1,48 @@
+\section{Quantum Optimal Control}
+
+GRADIENT MOTIVATION ....
+
+GRAPE is a popular method for calculating gradients of optimal control cost functionals \cite{khaneja2005optimal}. The method has successfully been applied to EXAMPLES systems. In GRAPE the control function is discretized in time-steps of  $\Delta t$. While the gradient of the cost function in the original algorithm was derived to $O(\Delta t ^2)$ precision, a series of higher order corrections were added in \cite{de2011second}. The derivative of the cost function \eqref{eq:infidelityCost} with respect to the time-discretized control function is
+\begin{equation}
+	\frac{\partial J}{\partial u_n (t_j)}  = - \Re \Braket{\chi (t_j) | i  \frac{\partial \hat{\mathcal{U}}_{t_j}}{\partial u_n (t_j)} | \psi (t_{j-1})} \; , \label{eq:CostDeriv}
+\end{equation}
+where $\ket{\chi (T)} \equiv i \ket{\psi_{\mathrm{target}}} \braket{\psi_{\mathrm{target}} | \psi (T)}$ must be propagated back in time to obtain $\ket{\chi (t_j)}$.
+The derivative of the propagator with respect to the control is given by
+\begin{align}
+	\frac{\partial \hat{\mathcal{U}}_{j}}{\partial u_n (t_j)} &= e^{-i \hat{H} (u_n (t_j)) \Delta t} \nonumber \\ 
+	 \times \sum_{k = 0}^{\infty } &  \frac{i^{k-1} \Delta t^{k+1}}{(k+1)!} \left[ \hat{H} (u_n (t_j)) , \frac{\partial \hat{H} (u_n (t_j))}{\partial u_n (t_j)}  \right]_k \; , \label{eq:PropDeriv}
+\end{align}
+where the zeroth order term of the recursive commutator produces the gradient of the original GRAPE algorithm.
+
+Calculating the propagator after each control update is an expensive procedure, as exponentiating the Hamiltonian \eqref{eq:ControlHamiltonians} is non-trivial. The Hamiltonian can be exponentiated term-wise through the Suzuki-Trotter expansion
+\begin{equation}
+		e ^{( \hat{H}_n + \hat{H}_0  ) \delta } = e^{  \hat{H}_n \delta /2  } e^{ \hat{H}_0 \delta } e^{ \hat{H}_n \delta /2 } + O(\delta^3) \; , \label{eq:SuzukiTrotter}
+\end{equation}
+where the error is due to any non-commutativity of the operators.
+Thus, the propagator can be updated efficiently, as only $e^{ \hat{H}_n \delta /2 }$ must be re-calculated as $u_n (t)$ is updated. Additionally, Trotter-expanding the propagator is a necessary step for conducting time-evolution through the tDMRG algorithm. 
+
+Further improvements in the cost of computing the propagator can be found if $\hat{H}_n$ is diagonal, as the exponentiation becomes trivial. Choosing a diagonal control Hamiltonian also has profound impact on the  derivative of the propagator, as all higher-order contributions vanish.\\
+Consider a Suzuki-Trotter expanded propagator, where $\hat{H}_n (u_n (t))$ is evaluated at either side of the time-step for increased accuracy
+\begin{align}
+	\hat{\mathcal{U}}_{j}^{\mathrm{ST}} &\equiv e^{ -i  \hat{H}_n (u (t_j)) \Delta t /2 } \; e^{ -i \hat{H}_0 \Delta t } \; e^{ -i  \hat{H}_n (u (t_{j-1}))  \Delta t /2 } \\
+	& \equiv \hat{\mathcal{U}}_{j}^{(n)} \hat{\mathcal{U}}_{j}^{(0)} \hat{\mathcal{U}}_{j-1}^{(n)} \; .
+\end{align}
+Both $\mathcal{U}_{j}^{\mathrm{ST}}$ and $\mathcal{U}_{j+1}^{\mathrm{ST}}$ contribute to the cost derivative due to the split-step of the control.
+The derivative of $\mathcal{U}_{j}^{\mathrm{ST}}$ according to eq. \eqref{eq:PropDeriv} is
+\begin{align}
+	\frac{\partial \hat{\mathcal{U}}_{j}^{\mathrm{ST}}}{\partial u_n (t_j)} &=  \frac{\partial \hat{\mathcal{U}}_{j}^{(n)}}{\partial u_n (t_j)} \hat{\mathcal{U}}_{j}^{(0)} \hat{\mathcal{U}}_{j-1}^{(n)} \nonumber \\
+	&= e^{ -i  \hat{H}_n (u (t_j)) \Delta t /2 } \left( -i \hat{H}_n (u_n (t_j)) \Delta t /2 \right) \hat{\mathcal{U}}_{j}^{(0)} \hat{\mathcal{U}}_{j-1}^{(n)} \nonumber \\
+	&= \left( -i \hat{H}_n (u_n (t_j)) \Delta t /2 \right) \hat{\mathcal{U}}_{j}^{\mathrm{ST}} \; . \label{eq:STpropderiv1}
+\end{align}
+Since $\hat{H}_n$ is diagonal, the recursive commutator is vanishing for $k > 0$, which causes all higher-order contributions to the derivative of the propagator to drop out.\\
+Likewise, the derivative of the second propagator is
+\begin{equation}
+	\frac{\partial \hat{\mathcal{U}}_{j+1}^{\mathrm{ST}}}{\partial u_n (j)} =  \hat{\mathcal{U}}_{j+1}^{\mathrm{ST}} \left( -i \hat{H}_n (u_n (t_j)) \Delta t /2 \right) \; . \label{eq:STpropderiv2}
+\end{equation}
+Inserting the derivatives of eq. \eqref{eq:STpropderiv1} and \eqref{eq:STpropderiv2} into the derivative of the cost (eq. \eqref{eq:CostDeriv}) yields
+\begin{align}
+	\frac{\partial J}{\partial u_n (t_j)} &= - \Re \Braket{\chi (t_j) |  \left(  \hat{H}_n (u_n (t_j)) \Delta t /2 \right) \hat{\mathcal{U}}_{j}^{\mathrm{ST}} | \psi (t_{j-1})} \nonumber \\
+	& \quad - \Re \Braket{\chi (t_{j+1}) | \hat{\mathcal{U}}_{j+1}^{\mathrm{ST}} \left(  \hat{H}_n (u_n (t_j)) \Delta t /2 \right) | \psi (t_{j})} \nonumber \\
+	&= - \Re \Braket{\chi (t_j) | \hat{H}_n (u_n (t_j)) \Delta t | \psi (t_{j})} \; . \label{eq:STcostgrad}
+\end{align}  
+Thus, the combination of the Suzuki-Trotter expansion and a diagonal control Hamiltonian eliminates all higher order contributions to the gradient. Thereby, the gradient of the cost is exact up to the order of the expansion.

@@ -1,0 +1,53 @@
+\section{Introduction}
+
+\textbf{What is control used for and why is it important?}
+\begin{itemize}
+	\item
+	Adiabatic solutions too slow / systems too complex to describe analytically
+
+	\item
+	Realize cold complex systems/configurations
+	
+	\item
+	State preparation 
+\end{itemize}
+
+
+\textbf{What are the previous examples of optimal control?}
+\begin{itemize}
+	\item
+	Examples of CRAB
+	
+	\item
+	Examples of GRAPE/Krotov
+	
+	\item
+	GROUP is CRAB+GRAPE
+	
+	\item
+	Complex systems require tensors, tDMRG. So far only CRAB, however tDMRG propagator has analytical  
+\end{itemize}
+
+
+\textbf{What is done for this paper?}
+\begin{itemize}
+	\item
+	Investigates the phase transition in the Bose-Hubbard model. This system is of interest as it is complex enough to warrant a tensor description, while the Mott is a central component of several experiments.
+
+	\item
+	Derived GRAPE gradient for tDMRG propagator. Choosing diagonal control Hamiltonian causes all higher order contributions to vanish.
+	
+	\item 
+	Illustrates how GROUP compares to other methods in optimizing tensor networks.
+\end{itemize}
+
+During the last decade great improvements in the experimental cold atoms toolbox have been realized, which has enabled a large degree of control  of quantum systems. Cold quantum gases provides a powerful experimental tool, as various Hamiltonians can be mapped to the physical systems, while external fields enable manipulations of the dynamics and properties of the atoms. Gradually, quantum systems realized are becoming too complex to accurately describe analytically, whereby suboptimal control schemes of the external fields have become one of the main limiting factors in achieving high-fidelity configurations. Furthermore, state transfers required for the preparation of quantum many-body systems often rely on adiabatic protocols resulting in needlessly long experimental cycles, in which the quantum system is vulnerable to heating or decoherence.
+
+Quantum optimal control is a framework enabling the design of control strategies that achieve the desired dynamics (REPLACE). 
+In quantum optimal control a common method of optimizing the control sequence is formulating the desired dynamics in terms of a minimization problem. Thereby, the quantum optimal control framework can utilize many of the methods developed in mathematical optimization theory. Two powerful algorithms within the framework are the GRadient-Ascent Pulse Engineering (GRAPE) and Krotov's method, which have been used in EXAMPLES. Both methods utilize the gradients of some cost functional to find the optimal control sequence. Derivative-based algorithms generally converge faster than those methods not using the additional information of the gradient, however, they are limited by the efficiency at which the derivative can be computed. 
+Derivative-free algorithms typically struggle optimizing a large set of parameters. Therefore, an alternative approach is parameterizing the control in a reduced basis such as the Chopped RAndom Basis (CRAB). The CRAB method has previously been used in conjunction with the Nelder-Mead algorithm to find optimal control sequences for highly complex quantum many-body systems, whose dynamics must be simulated through tensor-network-based techniques such as the time-dependent Density Matrix Renormalization Group (tDMRG). Evaluating cost-derivatives in systems described by tensor networks has so far been considered too inefficient.
+The GRadient Optimization Using Parametrization (GROUP) method introduced in REF combines a chopped basis description of the control with the gradient-based optimization of GRAPE. A characterization of the method on solving optimal control problems regarding Bose-Einstein condensates manipulated in an atom chip trap revealed that GROUP outperformed all the previously mentioned algorithms in terms of convergence rate and achieved result. 
+
+In this paper we derive the chopped basis parametrized gradient for systems described by tensor networks. Additionally we show that the propagator expansion required for the tDMRG algorithm causes higher order contributions to the GRAPE gradient to vanish if one chooses a diagonal control Hamiltonians. Thereby the precision of the cost derivative is solely dependent on the expansion error.
+The method is benchmarked in the context of crossing the superfluid to Mott-Insulator phase transition of the Bose-Hubbard model. Preparing a Mott-Insulator with very high fidelity is important, as the state constitutes the basis of many experiments (EXAMPLES). Furthermore, the phase transition of the Bose-Hubbard model has previously been investigated using Nelder-Mead with CRAB \cite{doria2011optimal,van2016optimal}.
+To ensure a proper comparison between the two methods, we solve the exact same optimization problem using both GROUP and Nelder-Mead with CRAB.
