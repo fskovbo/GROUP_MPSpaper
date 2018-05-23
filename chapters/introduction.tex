@@ -1,47 +1,15 @@
 \section{Introduction}
+During the last decade great improvements in the experimental cold atoms toolbox have enabled a large degree of control of quantum systems \cite{bloch2008many,bloch2012quantum}, which has enabled results in quantum meteorology \cite{rosi2014precision} and novel matter phases \cite{leonard2017supersolid}. These systems require precise protocols for manipulating the external fields in order to synthesize the desired dynamics. 
 
-\textbf{What is control used for and why is it important?}
-\begin{itemize}
-	\item
-	Adiabatic solutions too slow / systems too complex to describe analytically
+It is still challenging to coherently control many-body systems such as ultracold atoms in an optical lattice \cite{doria2011optimal}. Experimentially, these systems are typically initialized in the superfluid phase and transferred into the Mott insulator \cite{braun2015emergence, BH_experimental_realization}. This system is a possible platform for quantum logic gate operations \cite{two_qubit_quantum_gate_by_cold_controlled_collisons, quantum_gate_BH_via_collisions,laser_induced_quantum_gate_operations,FastQuantumGates,Toffili_gate_1D_lattice}, single atom transistors \cite{single_atom_transistor} and quantum simulation \cite{quantum_simulator}. Close to the phase transition the adiabatic time scales diverge since the gap to the first excited state closes in an inifinite system, which makes the transfer difficult \cite{cucchietti2007dynamics}.
 
-	\item
-	Realize cold complex systems/configurations
-	
-	\item
-	State preparation 
-\end{itemize}
+This transfer is difficult since the adiabatic time scales diverge close to the phase transition where the gap to the excited state closes in an infinite system \cite{cucchietti2007dynamics}. There have been numerical attempts to optimize this transition using optimal control theory and adiabatic ramp shapes \cite{ramping_optimization_zakrzewski,doria2011optimal,van2016optimal}. The transition has also been studied and optimized experimentally \cite{rosi2013fast,braun2015emergence,van2016optimal}.
+
+Ultracold gases trapped in an optical lattice provide an exciting platform for 
 
 
-\textbf{What are the previous examples of optimal control?}
-\begin{itemize}
-	\item
-	Examples of CRAB
-	
-	\item
-	Examples of GRAPE/Krotov
-	
-	\item
-	GROUP is CRAB+GRAPE
-	
-	\item
-	Complex systems require tensors, tDMRG. So far only CRAB, however tDMRG propagator has analytical  
-\end{itemize}
 
-
-\textbf{What is done for this paper?}
-\begin{itemize}
-	\item
-	Investigates the phase transition in the Bose-Hubbard model. This system is of interest as it is complex enough to warrant a tensor description, while the Mott is a central component of several experiments.
-
-	\item
-	Derived GRAPE gradient for tDMRG propagator. Choosing diagonal control Hamiltonian causes all higher order contributions to vanish.
-	
-	\item 
-	Illustrates how GROUP compares to other methods in optimizing tensor networks.
-\end{itemize}
-
-During the last decade great improvements in the experimental cold atoms toolbox have been realized, which has enabled a large degree of control  of quantum systems. Cold quantum gases provides a powerful experimental tool, as various Hamiltonians can be mapped to the physical systems, while external fields enable manipulations of the dynamics and properties of the atoms. Gradually, quantum systems realized are becoming too complex to accurately describe analytically, whereby suboptimal control schemes of the external fields have become one of the main limiting factors in achieving high-fidelity configurations. Furthermore, state transfers required for the preparation of quantum many-body systems often rely on adiabatic protocols resulting in needlessly long experimental cycles, in which the quantum system is vulnerable to heating or decoherence.
+ Cold quantum gases provides a powerful experimental tool, as various Hamiltonians can be mapped to the physical systems, while external fields enable manipulations of the dynamics and properties of the atoms. Gradually, quantum systems realized are becoming too complex to accurately describe analytically, whereby suboptimal control schemes of the external fields have become one of the main limiting factors in achieving high-fidelity configurations. Furthermore, state transfers required for the preparation of quantum many-body systems often rely on adiabatic protocols resulting in needlessly long experimental cycles, in which the quantum system is vulnerable to heating or decoherence.
 
 Quantum optimal control is a framework enabling the design of control strategies that achieve the desired dynamics (REPLACE). 
 In quantum optimal control a common method of optimizing the control sequence is formulating the desired dynamics in terms of a minimization problem. Thereby, the quantum optimal control framework can utilize many of the methods developed in mathematical optimization theory. Two powerful algorithms within the framework are the GRadient-Ascent Pulse Engineering (GRAPE) and Krotov's method, which have been used in EXAMPLES. Both methods utilize the gradients of some cost functional to find the optimal control sequence. Derivative-based algorithms generally converge faster than those methods not using the additional information of the gradient, however, they are limited by the efficiency at which the derivative can be computed. 

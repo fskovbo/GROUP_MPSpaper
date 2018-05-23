@@ -11,7 +11,7 @@ As mentioned above we discuss a state-to-state problem. In order to find a contr
 \begin{equation}
 \hat{J}(u(t))=\frac{1}{2} \left( 1-|\braket{\psi_{\mathrm{t}} | \psi (T)}|^2 \right) \label{eq:infidelityCost}
 \end{equation}
-where $T$ is the duration of the control sequence. In the first term we have the fidelity $F=|\braket{\psi_{\mathrm{t}} | \psi (T)}|^2$ and $1-F$ is the infidelity. \textbf{HAR VI INGEN REGULARIZERING?} Since the control functions determine the time evolution, one must find the set of controls bringing the final state as close as possible to the target state. In practice, very few optimal control problems can be solved analytically, however, expressing the problem as a minimization enables the use of well established frameworks derived in mathematical optimization theory.
+where $T$ is the duration of the control sequence. In the first term we have the fidelity $F=|\braket{\psi_{\mathrm{t}} | \psi (T)}|^2$ and $1-F$ is the infidelity. \textbf{HAR VI INGEN REGULARIZERING?} Since the control functions determine the time evolution, one must find the set of controls bringing the final state as close as possible to the target state. In practice, very few optimal control problems can be solved analytically, however, expressing the problem as a minimization enables the use of well established frameworks from mathematical optimization theory. This theory requires two primary components i) the ability to effectivly the cost in  Eq. (\ref{eq:infidelityCost}) many times and ii) access the the gradient of $\hat{J}(u(t))$.
 
 \section{Tensor-Network Descriptions}
 For complex many-body systems the Hilbert space grows too large for standard descriptions of states. Due to the combinatorial nature of the Bose-Hubbard model its corresponding Hilbert space scales exponentially with the system size. Matrix Products States parametrize states as networks of tensors.
@@ -25,9 +25,9 @@ Several methods exists for time-evolving tensor networks, however, most of them 
 Describe tailored tDMRG algorithm ...
 
 \section{Quantum Optimal Control}
-GRADIENT MOTIVATION ....
+In this section we discuss how to calculate the gradient of Eq. (\ref{eq:infidelityCost}), which is required for performing the numerical minimization. This gradient is typically calculated using the \textsc{grape} algorithm \cite{khaneja2005optimal}.
 
-GRAPE is a popular method for calculating gradients of optimal control cost functionals \cite{khaneja2005optimal}. The method has successfully been applied to EXAMPLES systems. In GRAPE the control function is discretized in time-steps of  $\Delta t$. While the gradient of the cost function in the original algorithm was derived to $O(\Delta t ^2)$ precision, a series of higher order corrections were added in \cite{de2011second}. The derivative of the cost function \eqref{eq:infidelityCost} with respect to the time-discretized control function is
+GRAPE is a popular method for calculating gradients of optimal control cost functionals . The method has successfully been applied to EXAMPLES systems. In GRAPE the control function is discretized in time-steps of  $\Delta t$. While the gradient of the cost function in the original algorithm was derived to $O(\Delta t ^2)$ precision, a series of higher order corrections were added in \cite{de2011second}. The derivative of the cost function \eqref{eq:infidelityCost} with respect to the time-discretized control function is
 \begin{equation}
 	\frac{\partial J}{\partial u_n (t_j)}  = - \Re \Braket{\chi (t_j) | i  \frac{\partial \hat{\mathcal{U}}_{t_j}}{\partial u_n (t_j)} | \psi (t_{j-1})} \; , \label{eq:CostDeriv}
 \end{equation}
