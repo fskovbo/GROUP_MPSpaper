@@ -70,7 +70,3 @@ Inserting the derivatives of eq. \eqref{eq:STpropderiv1} and \eqref{eq:STpropder
 \end{align}  
 Thus, the combination of the Suzuki-Trotter expansion and a diagonal control Hamiltonian eliminates all higher order contributions to the gradient. Thereby, the gradient of the cost is exact up to the order of the expansion.
 
-Due to the vanishing higher order corrections to the propagator the Hessian of the cost can be efficiently calculated. Thus, utilizing the derivatives \eqref{eq:STpropderiv1} and \eqref{eq:STpropderiv2} the matrix elements of the Hessian can be expressed as 
-\begin{align}
-	\frac{\partial^ 2 J}{\partial u_n (t_i) \partial u_n (t_j)} & \overset{i \geq j}{=} \Re \Braket{ \chi(t_i) | i \hat{H}_U \left( \prod_{k = j +1 }^{i} \hat{\mathcal{U}}_{k}^{\mathrm{ST}} \right) \hat{H}_U | \psi(t_j)  } \Delta t^2
-\end{align}
