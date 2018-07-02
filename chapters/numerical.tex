@@ -12,62 +12,68 @@ Here, $f_n$'s are basis functions, the coefficients $c_n$'s are the optimization
 The cost of calculating the partial derivative of eq. \eqref{eq:GROUPgradient} is dominated by the time evolution of the states $\psi$ and $\chi$ from eq. \eqref{eq:CostDeriv}. Hence, the computation time of the parametrized gradient is comparable to that of GRAPE.
 
 
-MOTIVATE IPOPT (solve constrained, non-linear, multi-variable problems)
+\section{IPOPT}
 
-GENERAL (perhaps write using specific symbols for control problem)
+\textbf{Er skevet specifict til dette problem, da interior-point metoder er rimeligt velkendt.}
 
-Interior point methods solve barrier problems of the form
+Optimal control problems are often subjected to a series of constraints, which can arise from either physical or technical limitations. The Bose-Hubbard model is only well-defined within the tight-binding limit, where the Wannier functions only overlap with their nearest neighbour~\cite{bloch2008many}. This equated to a minimum lattice depth for which the model is accurate, which in turn puts a lower bound on the interaction $U(t)$.
+Interior point methods are powerful algorithms for solving constrained, non-linear, multi-variable problems~\cite{NocedalWright2006}. The methods update the control parameters using the derivatives of the cost function via Newtons methods, however, they differ from the standard Newton approach in many ways to accommodate constraints~\cite{Karmarkar1984,Wachter2006}. In addition, they provide efficient performance while having better theoretical properties than the standard simplex method~\cite{NocedalWright2006}.\\ 
+
+Generally, the efficiency of optimization methods drops when optimizing in areas near the constraints, as only small steps can be taken there without violating the constraints. Therefore, interior point methods bias the search direction, such that the path traced in the optimization space lies well within the interior of the feasible region, whereby much larger steps can be taken~\cite{NocedalWright2006}. This is achieved by solving a series of logarithmic barrier subproblems with a variable barrier pre-factor, $\mu$, which converges to the optimal point as $\mu \to 0$~\cite{Byrd1997,Fiacco1990}. Thus, the optimization problem reads  
  \begin{align*}
-	\min_{x , s} \; & \; f(x) - \mu \sum_{i=1}^{m} \log s_i \\
-	\text{s.t.}  \; & \; c_E (x) = 0  \\ 
-					& \; c_I (x) - s =0 \; ,
+	\min_{U(t) , s} \; & \; \mathcal{J} - \mu \sum_{i=1}^{N} \log s_i \\
+	\text{s.t.}  \; & \; U(t) - U_{\mathrm{min}} = s  \; , 
 \end{align*}
-where $c_E$ and $c_I$ are equality and inequality constraints of the problem, and the slack variables, $s$, transform the inequality constraints into equality constraints. The barrier term enforces the slack variables to remain positive, as the function diverges if any $s_i \to \infty$
-The optimization Lagrangian of the problem reads
+where $s$ is a vector of slack variables transforming the inequality constraints into equality constraints. The barrier term enforces the slack variables to remain positive, as the function diverges if any $s_i \to 0$. The barrier term 
+Thus, the optimization Lagrangian of the problem reads
 \begin{equation}
-	\mathcal{L} = f(x) - \lambda ^T c_E (x) - \nu ^T (c_I (x) -s)
+	\mathcal{L} = \mathcal{J} - \lambda ^T (U(t) - U_{\mathrm{min}} - s)
 \end{equation}
-where $\lambda$ and $\nu$ are the Lagrange multipliers of the equality and inequality constraints respectively. 
-The Karush-Kuhn-Tucker conditions for the problem can be expressed in a single mapping
+where $\lambda$ is a vector of Lagrange multipliers of the inequality constraints.
+Interior point methods propagate by performing a Newton step in the direction of a point, $(U^*(t), s^*, \lambda ^*)$, realizing the Karush-Kuhn-Tucker conditions~\cite{NocedalWright2006,Kuhn2014}. Expressing the conditions into a single mapping yields
 \begin{equation}
 	F \equiv 
 	\begin{bmatrix}
-  \nabla_x f(x) - A_{E}^{T}(x) \lambda  - A_{I}^{T}(x) \nu \\
-  S \nu - \mu e \\
-  c_{E} (x)		\\
-  c_{I} (x) - s 
+  \nabla_{U(t)} \mathcal{J} - A^{T} \lambda  \\
+  S \lambda - \mu e \\
+  U(t) - U_{\mathrm{min}} - s 
   \end{bmatrix}
-  = 0 \; ,
+  \; \; , \; \; F(U^*(t), s^*, \lambda ^*) = 0 \; ,
 \end{equation}
-where $A_E (x)$ and $A_I (x)$ are the constraint Jacobians. $S$ and $Z$ are defined as diagonal matrices with entries given by the vectors $s$ and $\nu$, while we let $e = (1 ,1 , \ldots , 1 )^T$.
-Applying Newtons method to the non-linear problem given above yields
+where $A$ is the inequality constraint Jacobian matrix, $S$ is a diagonal matrix with entries given by the vectors $s$, while we let $e = (1 ,1 , \ldots , 1 )^T$.
+Applying Newtons method to the non-linear problem given by the above mapping yields
 \begin{equation}
   \begin{bmatrix}
-  \nabla_{xx} \mathcal{L} 	& 0 	& -A_{E}^{T}(x)	& -A_{I}^{T}(x)	\\
-  0 						& Z 	& 0 			& S 			\\
-  A_{E}(x) 					& 0 	& 0 			& 0				\\
-  A_{I}(x) 					& -I	& 0				& 0				 
+  \Laplace_{U(t)} \mathcal{L} 	& 0 	& -A^{T}	\\
+  0 						& Z 			& S 			\\
+  A 					& -I			& 0				 
   \end{bmatrix}  
   \begin{bmatrix}
-  p_x \\ p_s \\ p_{\lambda} \\ p_{\nu} 
+  p_{U(t)} \\ p_s \\ p_{\lambda} 
   \end{bmatrix}
   = - F
 \end{equation}
-where $\left[ p_x , p_s , p_{\lambda} , p_{\nu} \right]$ is the Newton step direction.
-
-This is a primal-dual system ...
-For a sufficient small, positive barrier parameter $\mu$ the problem gas a locally unique solution denoted by the point $( x(\mu) , s (\mu) , \lambda (\mu) , \nu (\mu) )$. The main problem is solved by solving a series of subproblems for various values of $\mu$. The trajectory described by the local solution points is called the primal-dual central path, and it converges to $( x* , s* , \lambda* , \nu * )$ as $\mu \to 0$. (taken from book)
-
-From GROUP the constraint Jacobian is given by ...
-The Hessian $\nabla_{xx} \mathcal{L}$ is in practice too demanding to compute for control problems, however, it can be efficiently approximated using the L-BFGS method, which utilizes previous derivatives. Hence, it is important that the derivatives are very accurate, as a poor Hessian can reduce the speed of the optimization significantly. 
-
-Optimal control problem often involve constraints ensuring the control parameters stay within a feasible limit
+where $p = ( p_x , p_s , p_{\lambda} )$ is the constrained Newton step direction, while $Z$ is a diagonal matrix with entries given by the vectors $\lambda$, and $I$ is the identity.
+After computing the step direction, the parameters are iterated according to 
 \begin{equation}
-	 u_{min} (t_j) \leq u(t_j) \leq u_{max} (t_j) \; .
-	 \label{eq:ControlConstraints}
+\begin{bmatrix}
+  U^{k+1} \\ s^{k+1} \\ \lambda^{k+1} 
+\end{bmatrix} 
+=
+\begin{bmatrix}
+  U^{k} \\ s^{k} \\ \lambda^{k} 
+\end{bmatrix} 
++ \alpha \circ p \; ,
+\label{eq:ConNewtonStep}
 \end{equation}
-The parameterizing of eq. \eqref{eq:controlParametrization} does not alter the constraints, although additional constraints of the $c_n$ coefficients can be introduced. However, optimizing a constrained problem through its gradient requires the derivatives of the constraints expressed through a Jacobian, which will be affected by the parameterization. The matrix elements of the Jacobian of eq. \eqref{eq:ControlConstraints} parametrized by \eqref{eq:controlParametrization} are
-\begin{equation}
-	\boldsymbol{J}_{ij} = \frac{\partial u(t_i)}{\partial c_j} = S(t_i) f_j (t_i) \; . \label{eq:ConstraintJacobian}
-\end{equation}
-The Jacobian of the constraints has $N \times M$ entries, which remain constant throughout the optimization, whereby they can easily be retrieved.
+where $\alpha$ is a vector of step-sizes for each of the variable, which are determined via a line-search \cite{Wachter2005,Fletcher2002}.
+
+\textbf{SKRIVES GENERELT?}
+
+In the GRAPE formalism, the interaction, $U(t)$, serves as both the control and constraint function, whereby the constraint Jacobian is simply the identity. Parameterizing the control function, like in GROUP, causes the derivatives of the constraints to change. Using the chain rule, the new constraint Jacobian elements read
+\begin{align}
+	(A (\boldsymbol{c}))_{i,n}  &= \sum_{j = 1}^{N} \frac{\partial h_i (\boldsymbol{u} ) }{\partial u(t_j)} \frac{\partial u(t_j)}{\partial c_n} \nonumber \\
+	&= \sum_{j = 1}^{N} (A (\boldsymbol{u}))_{i,j} S(t_j) f_n (t_j) \nonumber \\
+	&=  S(t_i) f_n (t_i) \; ,
+\end{align}
+where $h(\boldsymbol{u})$ are the constraint functions, and $(A_h (\boldsymbol{u}))_{i,j} = {\partial h_i (\boldsymbol{u}) } / {\partial u(t_j)}$ are recognized as the elements of the GRAPE parametrized constraint Jacobian. Since the GRAPE Jacobian is the identity, the transformed Jacobian is simply the product of the shape function and the chopped basis functions. 

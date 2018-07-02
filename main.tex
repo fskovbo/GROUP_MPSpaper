@@ -46,6 +46,7 @@ pra,
 \usepackage{enumitem}
 % Stuff for Mogens' nice figure
 \usepackage{braket}
+\usepackage{mathtools}
 \usepackage{tikz}
 
 
@@ -56,6 +57,7 @@ pra,
 \newcommand{\dif}[2]{\frac{\text{d} #1}{\text{d} #2}}
 \newcommand{\diff}[2]{\frac{\partial #1}{\partial #2}}
 \DeclareMathOperator*{\argmin}{arg\,min}
+\newcommand*\Laplace{\mathop{}\!\mathbin\bigtriangleup}
 
 \newcommand{\procspie}{Proceedings of the SPIE}
 %\usepackage{hyperref}% add hypertext capabilities
@@ -93,8 +95,9 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pharetra arcu ne
 
 
 \input{chapters/introduction}
-%\input{chapters/theory}
-%\input{chapters/numerical}
+\input{chapters/theory}
+\input{chapters/numerical}
+\input{chapters/Hessian}
 %\input{chapters/results}
 
 
