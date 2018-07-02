@@ -14,6 +14,8 @@ The cost of calculating the partial derivative of eq. \eqref{eq:GROUPgradient} i
 
 \section{IPOPT}
 
+\textbf{Er skevet specifict til dette problem, da interior-point metoder er rimeligt velkendt.}
+
 Optimal control problems are often subjected to a series of constraints, which can arise from either physical or technical limitations. The Bose-Hubbard model is only well-defined within the tight-binding limit, where the Wannier functions only overlap with their nearest neighbour~\cite{bloch2008many}. This equated to a minimum lattice depth for which the model is accurate, which in turn puts a lower bound on the interaction $U(t)$.
 Interior point methods are powerful algorithms for solving constrained, non-linear, multi-variable problems~\cite{NocedalWright2006}. The methods update the control parameters using the derivatives of the cost function via Newtons methods, however, they differ from the standard Newton approach in many ways to accommodate constraints~\cite{Karmarkar1984,Wachter2006}. In addition, they provide efficient performance while having better theoretical properties than the standard simplex method~\cite{NocedalWright2006}.\\ 
 
@@ -66,4 +68,12 @@ After computing the step direction, the parameters are iterated according to
 \end{equation}
 where $\alpha$ is a vector of step-sizes for each of the variable, which are determined via a line-search \cite{Wachter2005,Fletcher2002}.
 
-In the GRAPE formalism, the interaction, $U(t)$, serves as the control function, whereby the constraint Jacobian is simply the identity. Applying a parameterization of the control function like GROUP causes 
+\textbf{SKRIVES GENERELT?}
+
+In the GRAPE formalism, the interaction, $U(t)$, serves as both the control and constraint function, whereby the constraint Jacobian is simply the identity. Parameterizing the control function, like in GROUP, causes the derivatives of the constraints to change. Using the chain rule, the new constraint Jacobian elements read
+\begin{align}
+	(A (\boldsymbol{c}))_{i,n}  &= \sum_{j = 1}^{N} \frac{\partial h_i (\boldsymbol{u} ) }{\partial u(t_j)} \frac{\partial u(t_j)}{\partial c_n} \nonumber \\
+	&= \sum_{j = 1}^{N} (A (\boldsymbol{u}))_{i,j} S(t_j) f_n (t_j) \nonumber \\
+	&=  S(t_i) f_n (t_i) \; ,
+\end{align}
+where $h(\boldsymbol{u})$ are the constraint functions, and $(A_h (\boldsymbol{u}))_{i,j} = {\partial h_i (\boldsymbol{u}) } / {\partial u(t_j)}$ are recognized as the elements of the GRAPE parametrized constraint Jacobian. Since the GRAPE Jacobian is the identity, the transformed Jacobian is simply the product of the shape function and the chopped basis functions. 
